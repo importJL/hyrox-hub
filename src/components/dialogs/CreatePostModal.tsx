@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, Bold, Italic, List, Link } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { X, Plus, Bold, Italic, List, Link, Eye, Edit } from 'lucide-react';
 import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
 
 interface CreatePostModalProps {
   open: boolean;
@@ -18,6 +20,8 @@ export default function CreatePostModal({ open, onOpenChange, onSubmit }: Create
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [activeTab, setActiveTab] = useState('write');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -28,6 +32,23 @@ export default function CreatePostModal({ open, onOpenChange, onSubmit }: Create
 
   const handleRemoveTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag));
+  };
+
+  const insertMarkdown = (prefix: string, suffix: string = '') => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = content.substring(start, end);
+    const newText = content.substring(0, start) + prefix + selectedText + suffix + content.substring(end);
+    
+    setContent(newText);
+    
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+    }, 0);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,29 +96,51 @@ export default function CreatePostModal({ open, onOpenChange, onSubmit }: Create
 
           {/* Rich Text Toolbar */}
           <div className="flex items-center gap-1 p-2 bg-muted/30 rounded-lg border border-border">
-            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => insertMarkdown('**', '**')} title="Bold">
               <Bold className="h-4 w-4" />
             </Button>
-            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => insertMarkdown('*', '*')} title="Italic">
               <Italic className="h-4 w-4" />
             </Button>
-            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => insertMarkdown('- ')} title="Bullet List">
               <List className="h-4 w-4" />
             </Button>
-            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => insertMarkdown('[', '](url)')} title="Link">
               <Link className="h-4 w-4" />
             </Button>
             <div className="flex-1" />
-            <span className="text-xs text-muted-foreground">Use markdown for formatting</span>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
+              <TabsList className="h-8 bg-transparent">
+                <TabsTrigger value="write" className="h-7 px-3 text-xs data-[state=active]:bg-muted">
+                  <Edit className="h-3 w-3 mr-1" /> Write
+                </TabsTrigger>
+                <TabsTrigger value="preview" className="h-7 px-3 text-xs data-[state=active]:bg-muted">
+                  <Eye className="h-3 w-3 mr-1" /> Preview
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
 
           {/* Content */}
-          <Textarea 
-            placeholder="Write your post content here... (Supports Markdown)"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="bg-muted/50 border-border min-h-[200px] resize-none"
-          />
+          {activeTab === 'write' ? (
+            <Textarea 
+              ref={textareaRef}
+              placeholder="Write your post content here... (Supports Markdown: **bold**, *italic*, - bullet, [link](url))"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="bg-muted/50 border-border min-h-[200px] resize-none"
+            />
+          ) : (
+            <div className="min-h-[200px] p-4 bg-muted/30 border border-border rounded-lg overflow-auto">
+              {content ? (
+                <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                  {content}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-muted-foreground text-sm italic">Nothing to preview...</p>
+              )}
+            </div>
+          )}
 
           {/* Tags */}
           <div className="space-y-2">

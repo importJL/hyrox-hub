@@ -2,8 +2,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, Heart } from 'lucide-react';
+import { Star, Heart, Bell } from 'lucide-react';
 import { Instructor } from '@/data/mockData';
+import { useFollows } from '@/hooks/useFollows';
 
 interface InstructorCardProps {
   instructor: Instructor;
@@ -12,6 +13,8 @@ interface InstructorCardProps {
 }
 
 export default function InstructorCard({ instructor, isFavorite, onToggleFavorite }: InstructorCardProps) {
+  const { toggleFollow, isFollowing } = useFollows();
+  const isInstFollowing = isFollowing('instructor', instructor.id);
   return (
     <Card className="bg-card border-border overflow-hidden">
       <div className="h-32 overflow-hidden relative">
@@ -47,6 +50,18 @@ export default function InstructorCard({ instructor, isFavorite, onToggleFavorit
             </Badge>
           ))}
         </div>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className={`w-full mt-4 ${isInstFollowing ? 'bg-primary text-primary-foreground' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFollow('instructor', instructor.id, instructor.name);
+          }}
+        >
+          <Bell className="h-4 w-4 mr-2" />
+          {isInstFollowing ? 'Following' : 'Follow'} {instructor.name.split(' ')[0]}
+        </Button>
       </CardContent>
     </Card>
   );

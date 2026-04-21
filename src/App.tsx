@@ -39,7 +39,7 @@ export default function App() {
   return (
     <BookingsProvider>
       <div className="min-h-screen bg-background text-foreground font-sans pb-20 md:pb-0">
-        <AppHeader />
+        <AppHeader onNavigateToTab={setActiveTab} />
 
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

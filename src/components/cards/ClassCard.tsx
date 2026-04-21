@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, Clock, Dumbbell, Users, Heart, Check } from 'lucide-react';
+import { MapPin, Calendar, Clock, Dumbbell, Users, Heart, Check, Bell } from 'lucide-react';
 import { ClassSession } from '@/data/mockData';
 import { getLocationName, getInstructorName } from '@/utils/dataHelpers';
 import BookingDialog from '../dialogs/BookingDialog';
 import ReviewDialog from '../dialogs/ReviewDialog';
 import ClassDetailModal from '../dialogs/ClassDetailModal';
 import { useBookings } from '@/hooks/useBookings';
+import { useFollows } from '@/hooks/useFollows';
 
 interface ClassCardProps {
   classSession: ClassSession;
@@ -20,8 +21,10 @@ interface ClassCardProps {
 export default function ClassCard({ classSession, isFavorite, onToggleFavorite, onNavigateToMap }: ClassCardProps) {
   const [showDetail, setShowDetail] = useState(false);
   const { hasBookedClass } = useBookings();
+  const { toggleFollow, isFollowing } = useFollows();
   const isBooked = hasBookedClass(classSession.id, classSession.date, classSession.time);
   const spotsAvailable = classSession.spotsBooked < classSession.spotsTotal;
+  const isClassFollowing = isFollowing('class', classSession.id);
 
   return (
     <>
@@ -91,6 +94,15 @@ export default function ClassCard({ classSession, isFavorite, onToggleFavorite, 
             targetId={classSession.id}
             targetType="class"
           />
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={isClassFollowing ? 'bg-primary text-primary-foreground' : ''}
+            onClick={() => toggleFollow('class', classSession.id, classSession.title)}
+          >
+            <Bell className="h-4 w-4 mr-1" />
+            {isClassFollowing ? 'Following' : 'Follow'}
+          </Button>
         </CardFooter>
       </Card>
 

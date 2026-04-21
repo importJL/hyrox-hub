@@ -19,6 +19,11 @@ export type Instructor = {
   specialties: string[];
   image: string;
   locationId: string;
+  experience: string;
+  certifications: string[];
+  achievements: string[];
+  email: string;
+  classes: string[];
 };
 
 export type ClassSession = {
@@ -122,6 +127,11 @@ export const MOCK_INSTRUCTORS: Instructor[] = [
     specialties: ['Sled Push/Pull', 'Running Mechanics'],
     image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=1470&auto=format&fit=crop',
     locationId: 'loc_1',
+    experience: '12 years in functional fitness, 5 years HYROX coaching',
+    certifications: ['HYROX Master Trainer', 'NASM CPT', 'CrossFit L2'],
+    achievements: ['2023 HYROX World Champ', '3x Regional Winner'],
+    email: 'marcus@ironforge.fit',
+    classes: ['cls_1', 'cls_3', 'cls_4'],
   },
   {
     id: 'inst_2',
@@ -131,6 +141,11 @@ export const MOCK_INSTRUCTORS: Instructor[] = [
     specialties: ['Rowing/SkiErg', 'Endurance'],
     image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1470&auto=format&fit=crop',
     locationId: 'loc_2',
+    experience: '8 years in endurance sports, 3 years HYROX coaching',
+    certifications: ['HYROX Pro', 'ACE CPT', 'USATF Coach'],
+    achievements: ['2024 HYROX Pro Finalist', '2x National Champ'],
+    email: 'sarah@apex.perf',
+    classes: ['cls_2'],
   },
   {
     id: 'inst_3',
@@ -140,6 +155,11 @@ export const MOCK_INSTRUCTORS: Instructor[] = [
     specialties: ['Wall Balls', 'Sandbag Lunges', 'Strength'],
     image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1470&auto=format&fit=crop',
     locationId: 'loc_3',
+    experience: '15 years in S&C, 4 years HYROX coaching',
+    certifications: ['CSCS', 'USAW L1', 'HYROX Foundation'],
+    achievements: ['Best Beginner Coach 2024'],
+    email: 'david@grindhouse.fit',
+    classes: ['cls_1', 'cls_3'],
   }
 ];
 

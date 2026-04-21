@@ -11,6 +11,7 @@ import PostDetailModal from '../dialogs/PostDetailModal';
 export default function ForumTab() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [posts, setPosts] = useState<ForumPost[]>(MOCK_FORUM_POSTS);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedPost, setSelectedPost] = useState<ForumPost | null>(null);
@@ -73,6 +74,26 @@ export default function ForumTab() {
 
   const handleDeletePost = (postId: string) => {
     setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
+  const handleToggleLike = (postId: string) => {
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        const isCurrentlyLiked = likedPosts.has(postId);
+        if (isCurrentlyLiked) {
+          setLikedPosts(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(postId);
+            return newSet;
+          });
+          return { ...post, likes: post.likes - 1 };
+        } else {
+          setLikedPosts(prev => new Set(prev).add(postId));
+          return { ...post, likes: post.likes + 1 };
+        }
+      }
+      return post;
+    }));
   };
 
   return (
@@ -145,7 +166,11 @@ export default function ForumTab() {
               onClick={() => handlePostClick(post)}
               className="cursor-pointer"
             >
-              <ForumPostCard post={post} />
+              <ForumPostCard 
+                post={post} 
+                isLiked={likedPosts.has(post.id)}
+                onToggleLike={handleToggleLike}
+              />
             </div>
           ))
         ) : (
