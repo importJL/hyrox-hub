@@ -8,9 +8,10 @@ import ClassCard from '../cards/ClassCard';
 interface ClassesTabProps {
   isFavorite: (id: string) => boolean;
   onToggleFavorite: (id: string) => void;
+  onNavigateToMap?: (locationId: string) => void;
 }
 
-export default function ClassesTab({ isFavorite, onToggleFavorite }: ClassesTabProps) {
+export default function ClassesTab({ isFavorite, onToggleFavorite, onNavigateToMap }: ClassesTabProps) {
   const {
     searchQuery,
     setSearchQuery,
@@ -60,12 +61,13 @@ export default function ClassesTab({ isFavorite, onToggleFavorite }: ClassesTabP
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredClasses.map(cls => (
-          <ClassCard 
-            key={cls.id} 
-            classSession={cls} 
-            isFavorite={isFavorite(cls.id)}
-            onToggleFavorite={onToggleFavorite}
-          />
+<ClassCard 
+              key={cls.id} 
+              classSession={cls} 
+              isFavorite={isFavorite(cls.id)}
+              onToggleFavorite={onToggleFavorite}
+              onNavigateToMap={onNavigateToMap}
+            />
         ))}
       </div>
     </div>

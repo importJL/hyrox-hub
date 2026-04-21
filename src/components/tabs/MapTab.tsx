@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +10,12 @@ import Map from '../Map';
 import BookingDialog from '../dialogs/BookingDialog';
 import ReviewDialog from '../dialogs/ReviewDialog';
 
-export default function MapTab() {
+interface MapTabProps {
+  initialSelectedLocation?: string | null;
+  onLocationSelect?: (id: string) => void;
+}
+
+export default function MapTab({ initialSelectedLocation, onLocationSelect }: MapTabProps) {
   const {
     mapSearchQuery,
     setMapSearchQuery,
@@ -19,6 +25,12 @@ export default function MapTab() {
     setSelectedMapLocation,
     filteredMapLocations,
   } = useMapFilters();
+
+  useEffect(() => {
+    if (initialSelectedLocation) {
+      setSelectedMapLocation(initialSelectedLocation);
+    }
+  }, [initialSelectedLocation, setSelectedMapLocation]);
 
   return (
     <div className="h-[600px] animate-in fade-in-50 duration-500 flex flex-col md:flex-row gap-4">

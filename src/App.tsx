@@ -12,12 +12,21 @@ import FavoritesTab from '@/components/tabs/FavoritesTab';
 import FriendsTab from '@/components/tabs/FriendsTab';
 import BookingsTab from '@/components/tabs/BookingsTab';
 import Chatbox from '@/components/Chatbox';
+import { useMapFilters } from '@/hooks/useFilters';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('classes');
   const [userLocation, setUserLocation] = useState<[number, number] | undefined>(undefined);
+  const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null);
+  const { setSelectedMapLocation } = useMapFilters();
 
   const { favorites, friends, toggleFavorite, toggleFriend, isFavorite } = useFavorites();
+
+  const handleNavigateToMap = (locationId: string) => {
+    setSelectedLocationId(locationId);
+    setSelectedMapLocation(locationId);
+    setActiveTab('map');
+  };
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -45,7 +54,7 @@ export default function App() {
             </TabsList>
 
             <TabsContent value="classes">
-              <ClassesTab isFavorite={isFavorite} onToggleFavorite={toggleFavorite} />
+              <ClassesTab isFavorite={isFavorite} onToggleFavorite={toggleFavorite} onNavigateToMap={handleNavigateToMap} />
             </TabsContent>
 
             <TabsContent value="bookings">
@@ -53,7 +62,7 @@ export default function App() {
             </TabsContent>
 
             <TabsContent value="map">
-              <MapTab />
+              <MapTab initialSelectedLocation={selectedLocationId} onLocationSelect={(id) => setSelectedLocationId(id)} />
             </TabsContent>
 
             <TabsContent value="instructors">

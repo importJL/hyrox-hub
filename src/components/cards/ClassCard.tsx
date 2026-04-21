@@ -14,9 +14,10 @@ interface ClassCardProps {
   classSession: ClassSession;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
+  onNavigateToMap?: (locationId: string) => void;
 }
 
-export default function ClassCard({ classSession, isFavorite, onToggleFavorite }: ClassCardProps) {
+export default function ClassCard({ classSession, isFavorite, onToggleFavorite, onNavigateToMap }: ClassCardProps) {
   const [showDetail, setShowDetail] = useState(false);
   const { hasBookedClass } = useBookings();
   const isBooked = hasBookedClass(classSession.id, classSession.date, classSession.time);
@@ -97,6 +98,7 @@ export default function ClassCard({ classSession, isFavorite, onToggleFavorite }
         classSession={classSession}
         open={showDetail}
         onOpenChange={setShowDetail}
+        onNavigateToMap={onNavigateToMap}
       />
     </>
   );

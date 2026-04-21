@@ -47,6 +47,15 @@ export type Review = {
   date: string;
 };
 
+export type Reply = {
+  id: string;
+  postId: string;
+  author: string;
+  content: string;
+  date: string;
+  likes: number;
+};
+
 export type ForumPost = {
   id: string;
   title: string;
@@ -56,6 +65,7 @@ export type ForumPost = {
   replies: number;
   likes: number;
   tags: string[];
+  replyData?: Reply[];
 };
 
 export type UserProfile = {
@@ -204,6 +214,11 @@ export const MOCK_FORUM_POSTS: ForumPost[] = [
     replies: 14,
     likes: 23,
     tags: ['Gear', 'Sled Push'],
+    replyData: [
+      { id: 'reply_1_1', postId: 'post_1', author: 'MarcusVance', content: 'Nike Metcon series are great! They have a flat sole for sleds but still comfortable for running.', date: format(addDays(today, -2), 'yyyy-MM-dd'), likes: 8 },
+      { id: 'reply_1_2', postId: 'post_1', author: 'SarahJ', content: 'Reebok Nano X3 is my go-to. The grip is insane on turf!', date: format(addDays(today, -1), 'yyyy-MM-dd'), likes: 5 },
+      { id: 'reply_1_3', postId: 'post_1', author: 'HyroxRookie99', content: 'Thanks! Just ordered the Nanos. Hopefully they arrive before my race!', date: format(today, 'yyyy-MM-dd'), likes: 2 },
+    ],
   },
   {
     id: 'post_2',
@@ -214,6 +229,10 @@ export const MOCK_FORUM_POSTS: ForumPost[] = [
     replies: 5,
     likes: 41,
     tags: ['Review', 'Iron Forge', 'Simulation'],
+    replyData: [
+      { id: 'reply_2_1', postId: 'post_2', author: 'MarcV', content: 'Glad you enjoyed it! The simulation setup is exactly event-spec. See you in 4 weeks!', date: format(addDays(today, -1), 'yyyy-MM-dd'), likes: 12 },
+      { id: 'reply_2_2', postId: 'post_2', author: 'Jamie_T', content: 'How did your legs feel after? Thinking of booking this weekend.', date: format(addDays(today, -1), 'yyyy-MM-dd'), likes: 3 },
+    ],
   },
   {
     id: 'post_3',
@@ -224,7 +243,11 @@ export const MOCK_FORUM_POSTS: ForumPost[] = [
     replies: 8,
     likes: 12,
     tags: ['Strategy', 'Wall Balls'],
-  }
+    replyData: [
+      { id: 'reply_3_1', postId: 'post_3', author: 'CoachDavid', content: 'Sets of 10 with a quick breath in between. Consistency beats intensity here. Keep a steady pace!', date: format(today, 'yyyy-MM-dd'), likes: 6 },
+      { id: 'reply_3_2', postId: 'post_3', author: 'EngineGuy', content: 'I personally do 15-10-5. Gets progressively easier which psychologically helps.', date: format(today, 'yyyy-MM-dd'), likes: 4 },
+    ],
+  },
 ];
 
 export const MOCK_USERS: UserProfile[] = [

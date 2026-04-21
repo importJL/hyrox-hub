@@ -5,20 +5,22 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   MapPin, Calendar, Clock, Dumbbell, Users, Star, 
-  Activity, Target, Flame, Timer, Wallet, ChevronRight
+  Activity, Target, Flame, Timer, Wallet, ChevronRight, Map
 } from 'lucide-react';
 import { ClassSession, Instructor, Location } from '@/data/mockData';
 import { getLocationName, getInstructorName, getInstructorById, getLocationById } from '@/utils/dataHelpers';
 import BookingDialog from './BookingDialog';
 import ReviewDialog from './ReviewDialog';
+import MiniMap from '../MiniMap';
 
 interface ClassDetailModalProps {
   classSession: ClassSession;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onNavigateToMap?: (locationId: string) => void;
 }
 
-export default function ClassDetailModal({ classSession, open, onOpenChange }: ClassDetailModalProps) {
+export default function ClassDetailModal({ classSession, open, onOpenChange, onNavigateToMap }: ClassDetailModalProps) {
   const instructor = getInstructorById(classSession.instructorId);
   const location = getLocationById(classSession.locationId);
 
@@ -107,10 +109,22 @@ export default function ClassDetailModal({ classSession, open, onOpenChange }: C
 
             {/* Location with Mini Map */}
             <div>
-              <h3 className="font-semibold mb-2 flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                Location
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  Location
+                </h3>
+                {onNavigateToMap && location && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-primary border-primary/30 hover:bg-primary/10"
+                    onClick={() => onNavigateToMap(classSession.locationId)}
+                  >
+                    <Map className="h-4 w-4 mr-1" /> Map
+                  </Button>
+                )}
+              </div>
               <div className="bg-muted/30 p-3 rounded-lg border border-border">
                 <p className="font-medium">{location?.name || getLocationName(classSession.locationId)}</p>
                 <p className="text-sm text-muted-foreground">{location?.address}</p>
@@ -119,6 +133,7 @@ export default function ClassDetailModal({ classSession, open, onOpenChange }: C
                     <Badge key={fac} variant="outline" className="text-xs">{fac}</Badge>
                   ))}
                 </div>
+                {location && <MiniMap location={location} />}
               </div>
             </div>
 
