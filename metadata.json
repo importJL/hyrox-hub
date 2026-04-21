@@ -1,0 +1,8 @@
+{
+  "name": "HYROX Hub",
+  "description": "A fitness aggregation platform for finding HYROX classes, instructors, and gyms. Features include location-based filtering, AI chat assistance, and community reviews.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
