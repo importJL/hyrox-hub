@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
 import { useFavorites } from '@/hooks/useFavorites';
 import { BookingsProvider } from '@/hooks/useBookings';
+import { useAuth } from '@/hooks/useAuth';
 import AppHeader from '@/components/AppHeader';
 import ClassesTab from '@/components/tabs/ClassesTab';
 import MapTab from '@/components/tabs/MapTab';
@@ -13,8 +15,20 @@ import FriendsTab from '@/components/tabs/FriendsTab';
 import BookingsTab from '@/components/tabs/BookingsTab';
 import Chatbox from '@/components/Chatbox';
 import { useMapFilters } from '@/hooks/useFilters';
+import LoginPage from '@/pages/LoginPage';
+import RegisterPage from '@/pages/RegisterPage';
 
-export default function App() {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+}
+
+function MainApp() {
   const [activeTab, setActiveTab] = useState('classes');
   const [userLocation, setUserLocation] = useState<[number, number] | undefined>(undefined);
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null);
@@ -28,6 +42,10 @@ export default function App() {
     setActiveTab('map');
   };
 
+  const handleNavigateToTab = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -39,17 +57,16 @@ export default function App() {
   return (
     <BookingsProvider>
       <div className="min-h-screen bg-background text-foreground font-sans pb-20 md:pb-0">
-        <AppHeader onNavigateToTab={setActiveTab} />
+        <AppHeader onNavigateToTab={handleNavigateToTab} />
 
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-7 bg-muted mb-8">
+            <TabsList className="grid w-full grid-cols-6 bg-muted mb-8">
               <TabsTrigger value="classes" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Classes</TabsTrigger>
               <TabsTrigger value="bookings" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Bookings</TabsTrigger>
               <TabsTrigger value="map" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Map</TabsTrigger>
               <TabsTrigger value="instructors" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Coaches</TabsTrigger>
               <TabsTrigger value="forum" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Forum</TabsTrigger>
-              <TabsTrigger value="favorites" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Saved</TabsTrigger>
               <TabsTrigger value="friends" className="data-[state=active]:bg-background data-[state=active]:text-primary text-xs sm:text-sm">Friends</TabsTrigger>
             </TabsList>
 
@@ -87,5 +104,19 @@ export default function App() {
         <Toaster />
       </div>
     </BookingsProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <MainApp />
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
 }

@@ -1,18 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { ModeToggle } from './theme-toggle';
-import { Flame, Bell, User, Settings, LogOut, X } from 'lucide-react';
+import { Flame, Bell, User, Settings, LogOut, Bookmark, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import ProfileModal from './dialogs/ProfileModal';
 import SettingsModal from './dialogs/SettingsModal';
 import { useFollows } from '@/hooks/useFollows';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AppHeaderProps {
   onNavigateToTab?: (tab: string) => void;
 }
 
 export default function AppHeader({ onNavigateToTab }: AppHeaderProps) {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -20,6 +23,7 @@ export default function AppHeader({ onNavigateToTab }: AppHeaderProps) {
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const { followingClasses, followingInstructors, followingLocations } = useFollows();
+  const { user, logout } = useAuth();
 
   const notifications = [
     { id: 1, type: 'class', text: 'New HYROX Foundation class scheduled', time: '2h ago', read: false },
@@ -46,6 +50,16 @@ export default function AppHeader({ onNavigateToTab }: AppHeaderProps) {
     onNavigateToTab?.('classes');
   };
 
+  const handleSavedClick = () => {
+    setShowProfileMenu(false);
+    onNavigateToTab?.('favorites');
+  };
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
+
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'class': return '🏋️';
@@ -54,6 +68,10 @@ export default function AppHeader({ onNavigateToTab }: AppHeaderProps) {
       case 'location': return '📍';
       default: return '🔔';
     }
+  };
+
+  const getInitials = (username: string) => {
+    return username.charAt(0).toUpperCase();
   };
 
   return (
@@ -132,15 +150,18 @@ export default function AppHeader({ onNavigateToTab }: AppHeaderProps) {
             >
               <Avatar className="h-8 w-8 border border-border">
                 <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{user ? getInitials(user.username) : 'U'}</AvatarFallback>
               </Avatar>
             </button>
             
             {showProfileMenu && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50">
                 <div className="p-2 border-b border-border">
-                  <p className="text-sm font-medium">You</p>
-                  <p className="text-xs text-muted-foreground">@your_handle</p>
+                  <p className="text-sm font-medium">{user?.username || 'User'}</p>
+                  <p className="text-xs text-muted-foreground">@{user?.username || 'handle'}</p>
+                  <Badge variant="secondary" className="mt-1 text-xs">
+                    {user?.persona === 'coach' ? 'Coach' : 'Student'}
+                  </Badge>
                 </div>
                 <div className="py-1">
                   <button 
@@ -151,13 +172,22 @@ export default function AppHeader({ onNavigateToTab }: AppHeaderProps) {
                   </button>
                   <button 
                     className="w-full px-4 py-2 text-sm text-left hover:bg-muted flex items-center gap-2"
+                    onClick={handleSavedClick}
+                  >
+                    <Bookmark className="h-4 w-4" /> Saved
+                  </button>
+                  <button 
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-muted flex items-center gap-2"
                     onClick={() => { setShowProfileMenu(false); setShowSettingsModal(true); }}
                   >
                     <Settings className="h-4 w-4" /> Settings
                   </button>
                 </div>
                 <div className="border-t border-border py-1">
-                  <button className="w-full px-4 py-2 text-sm text-left hover:bg-muted flex items-center gap-2 text-red-500">
+                  <button 
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-muted flex items-center gap-2 text-red-500"
+                    onClick={handleSignOut}
+                  >
                     <LogOut className="h-4 w-4" /> Sign Out
                   </button>
                 </div>
