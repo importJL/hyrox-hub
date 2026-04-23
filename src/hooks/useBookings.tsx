@@ -21,6 +21,7 @@ type BookingsContextType = {
   bookings: Booking[];
   reviews: ReviewEntry[];
   hasBookedClass: (classId: string, date?: string, time?: string) => boolean;
+  hasAttendedClass: (classId: string, date: string, time: string) => boolean;
   isClassFullyBooked: (classSession: ClassSession) => boolean;
   hasSpotsAvailable: (classSession: ClassSession) => boolean;
   bookClass: (classSession: ClassSession) => boolean;
@@ -43,6 +44,11 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
       (!time || b.classSession.time === time)
     );
   }, [bookings]);
+
+  const hasAttendedClass = useCallback((classId: string, date: string, time: string): boolean => {
+    const classDateTime = new Date(`${date} ${time}`);
+    return new Date() > classDateTime && hasBookedClass(classId, date, time);
+  }, [hasBookedClass]);
 
   const isClassFullyBooked = useCallback((classSession: ClassSession): boolean => {
     return classSession.spotsBooked >= classSession.spotsTotal;
@@ -97,11 +103,6 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    if (targetType === 'class' && !canReviewClass(targetId)) {
-      toast.error('You must book this class to review it');
-      return false;
-    }
-
     if (hasUserReviewed(targetId, targetType)) {
       toast.error('You have already reviewed this');
       return false;
@@ -118,12 +119,13 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
     
     toast.success('Review submitted successfully!');
     return true;
-  }, [hasUserReviewed, canReviewClass]);
+  }, [hasUserReviewed]);
 
   const value: BookingsContextType = {
     bookings,
     reviews,
     hasBookedClass,
+    hasAttendedClass,
     isClassFullyBooked,
     hasSpotsAvailable,
     bookClass,

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,6 @@ import {
 import { ClassSession, Instructor, Location } from '@/data/mockData';
 import { getLocationName, getInstructorName, getInstructorById, getLocationById } from '@/utils/dataHelpers';
 import BookingDialog from './BookingDialog';
-import ReviewDialog from './ReviewDialog';
 import MiniMap from '../MiniMap';
 
 interface ClassDetailModalProps {
@@ -18,9 +18,11 @@ interface ClassDetailModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onNavigateToMap?: (locationId: string) => void;
+  forceBookingOpen?: boolean;
 }
 
 export default function ClassDetailModal({ classSession, open, onOpenChange, onNavigateToMap }: ClassDetailModalProps) {
+  const [bookingKey, setBookingKey] = useState(0);
   const instructor = getInstructorById(classSession.instructorId);
   const location = getLocationById(classSession.locationId);
 
@@ -179,12 +181,11 @@ export default function ClassDetailModal({ classSession, open, onOpenChange, onN
         </ScrollArea>
 
         {/* Actions */}
-        <div className="border-t border-border pt-4 mt-4 flex gap-2">
-          <BookingDialog classSession={classSession} />
-          <ReviewDialog 
-            title={classSession.title}
-            targetId={classSession.id}
-            targetType="class"
+        <div className="border-t border-border pt-4 mt-4">
+          <BookingDialog 
+            key={bookingKey}
+            classSession={classSession} 
+            onBookingComplete={() => setBookingKey(k => k + 1)}
           />
         </div>
       </DialogContent>

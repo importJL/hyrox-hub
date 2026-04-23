@@ -2,11 +2,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Calendar, Clock, MapPin, Users, X, Ticket } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, X, Ticket, Star } from 'lucide-react';
 import { useBookings, Booking } from '@/hooks/useBookings';
 import { getLocationName, getInstructorName } from '@/utils/dataHelpers';
 import BookingDialog from '../dialogs/BookingDialog';
 import ClassDetailModal from '../dialogs/ClassDetailModal';
+import ReviewDialog from '../dialogs/ReviewDialog';
 import { ClassSession } from '@/data/mockData';
 import { useState } from 'react';
 
@@ -87,6 +88,12 @@ export default function BookingsTab() {
               >
                 View Details
               </Button>
+              <ReviewDialog 
+                title={booking.classSession.title}
+                targetId={booking.classId}
+                targetType="class"
+                classSession={booking.classSession}
+              />
               <Button 
                 variant="outline" 
                 className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"

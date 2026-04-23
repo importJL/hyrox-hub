@@ -111,10 +111,10 @@ export default function CreatePostModal({ open, onOpenChange, onSubmit }: Create
             <div className="flex-1" />
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
               <TabsList className="h-8 bg-transparent">
-                <TabsTrigger value="write" className="h-7 px-3 text-xs data-[state=active]:bg-muted">
+                <TabsTrigger type="button" value="write" className="h-7 px-3 text-xs data-[state=active]:bg-muted">
                   <Edit className="h-3 w-3 mr-1" /> Write
                 </TabsTrigger>
-                <TabsTrigger value="preview" className="h-7 px-3 text-xs data-[state=active]:bg-muted">
+                <TabsTrigger type="button" value="preview" className="h-7 px-3 text-xs data-[state=active]:bg-muted">
                   <Eye className="h-3 w-3 mr-1" /> Preview
                 </TabsTrigger>
               </TabsList>
@@ -133,9 +133,9 @@ export default function CreatePostModal({ open, onOpenChange, onSubmit }: Create
           ) : (
             <div className="min-h-[200px] p-4 bg-muted/30 border border-border rounded-lg overflow-auto">
               {content ? (
-                <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-                  {content}
-                </ReactMarkdown>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown>{content}</ReactMarkdown>
+                </div>
               ) : (
                 <p className="text-muted-foreground text-sm italic">Nothing to preview...</p>
               )}

@@ -30,29 +30,33 @@ export default function FriendsTab({ friends, onToggleFriend }: FriendsTabProps)
       )
     : MOCK_USERS;
 
-  const filteredFriendActivities = searchQuery && !showFindFriends
-    ? friendUsers.filter(u => {
-        const matchesUser = 
-          u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          u.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          u.bio.toLowerCase().includes(searchQuery.toLowerCase());
-        
-        const hasMatchingClasses = u.upcomingClasses.some(classId => {
-          const cls = getClassById(classId);
-          return cls && (
-            cls.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            getLocationName(cls.locationId).toLowerCase().includes(searchQuery.toLowerCase())
-          );
-        }) || u.pastClasses.some(classId => {
-          const cls = getClassById(classId);
-          return cls && (
-            cls.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            getLocationName(cls.locationId).toLowerCase().includes(searchQuery.toLowerCase())
-          );
-        });
-        
-        return matchesUser || hasMatchingClasses;
-      })
+  const filteredFriendActivities = !showFindFriends
+    ? (searchQuery 
+        ? friendUsers.filter(u => {
+            const matchesUser = 
+              u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              u.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              u.bio.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            const hasMatchingClasses = u.upcomingClasses.some(classId => {
+              const cls = getClassById(classId);
+              return cls && (
+                cls.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                cls.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                getLocationName(cls.locationId).toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            }) || u.pastClasses.some(classId => {
+              const cls = getClassById(classId);
+              return cls && (
+                cls.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                cls.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                getLocationName(cls.locationId).toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            });
+            
+            return matchesUser || hasMatchingClasses;
+          })
+        : friendUsers)
     : [];
 
   return (
@@ -107,7 +111,7 @@ export default function FriendsTab({ friends, onToggleFriend }: FriendsTabProps)
           <h3 className="text-lg font-semibold border-b border-border pb-2">
             {showFindFriends ? 'Search Results' : 'Your Network'}
           </h3>
-          {(showFindFriends ? filteredUsers : MOCK_USERS).map(user => (
+          {(showFindFriends ? filteredUsers : friends.length > 0 ? friendUsers : []).map(user => (
             <UserCard 
               key={user.id} 
               user={user as UserProfile}
@@ -122,45 +126,53 @@ export default function FriendsTab({ friends, onToggleFriend }: FriendsTabProps)
           <h3 className="text-lg font-semibold border-b border-border pb-2">
             {searchQuery && !showFindFriends ? 'Search Results' : 'Activity Feed'}
           </h3>
-          {searchQuery && !showFindFriends && filteredFriendActivities.length > 0 ? (
-            <div className="space-y-4">
-              {filteredFriendActivities.map(friend => {
-                const latestClassId = friend.upcomingClasses[0] || friend.pastClasses[0];
-                const cls = getClassById(latestClassId);
-                return cls ? (
-                  <Card key={`search-${friend.id}`} className="bg-card border-primary/30">
-                    <CardHeader className="pb-3 flex flex-row items-center gap-4">
-                      <Avatar>
-                        <AvatarImage src={friend.image} />
-                        <AvatarFallback>{friend.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm">
-                          <span className="font-semibold text-foreground">{friend.name}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Matched: "{searchQuery}"
-                        </p>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="bg-muted/30 p-3 rounded-lg border border-border">
-                        <h4 className="font-semibold text-foreground">{cls.title}</h4>
-                        <p className="text-sm text-card-foreground/80 flex items-center gap-1 mt-1">
-                          <Calendar className="h-3 w-3 text-primary" /> {cls.date} at {cls.time}
-                        </p>
-                        <p className="text-sm text-card-foreground/80 flex items-center gap-1 mt-1">
-                          <MapPin className="h-3 w-3 text-primary" /> {getLocationName(cls.locationId)}
-                        </p>
-                      </div>
-                    </CardContent>
-                    <CardContent className="pt-0">
-                      <BookingDialog classSession={cls} variant="sm" buttonText={`Book for £${cls.price}`} />
-                    </CardContent>
-                  </Card>
-                ) : null;
-              })}
-            </div>
+          {searchQuery && !showFindFriends ? (
+            filteredFriendActivities.length > 0 ? (
+              <div className="space-y-4">
+                {filteredFriendActivities.map(friend => {
+                  const latestClassId = friend.upcomingClasses[0] || friend.pastClasses[0];
+                  const cls = getClassById(latestClassId);
+                  return cls ? (
+                    <Card key={`search-${friend.id}`} className="bg-card border-primary/30">
+                      <CardHeader className="pb-3 flex flex-row items-center gap-4">
+                        <Avatar>
+                          <AvatarImage src={friend.image} />
+                          <AvatarFallback>{friend.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm">
+                            <span className="font-semibold text-foreground">{friend.name}</span>
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Matched: "{searchQuery}"
+                          </p>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-muted/30 p-3 rounded-lg border border-border">
+                          <h4 className="font-semibold text-foreground">{cls.title}</h4>
+                          <p className="text-sm text-card-foreground/80 flex items-center gap-1 mt-1">
+                            <Calendar className="h-3 w-3 text-primary" /> {cls.date} at {cls.time}
+                          </p>
+                          <p className="text-sm text-card-foreground/80 flex items-center gap-1 mt-1">
+                            <MapPin className="h-3 w-3 text-primary" /> {getLocationName(cls.locationId)}
+                          </p>
+                        </div>
+                      </CardContent>
+                      <CardContent className="pt-0">
+                        <BookingDialog classSession={cls} variant="sm" buttonText={`Book for £${cls.price}`} />
+                      </CardContent>
+                    </Card>
+                  ) : null;
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-20 text-muted-foreground bg-card border border-border rounded-xl">
+                <Search className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                <h3 className="text-lg font-medium text-foreground/80">No results found</h3>
+                <p>No activities matching "{searchQuery}"</p>
+              </div>
+            )
           ) : friends.length === 0 ? (
             <div className="text-center py-20 text-muted-foreground bg-card border border-border rounded-xl">
               <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />

@@ -6,7 +6,6 @@ import { MapPin, Calendar, Clock, Dumbbell, Users, Heart, Check, Bell } from 'lu
 import { ClassSession } from '@/data/mockData';
 import { getLocationName, getInstructorName } from '@/utils/dataHelpers';
 import BookingDialog from '../dialogs/BookingDialog';
-import ReviewDialog from '../dialogs/ReviewDialog';
 import ClassDetailModal from '../dialogs/ClassDetailModal';
 import { useBookings } from '@/hooks/useBookings';
 import { useFollows } from '@/hooks/useFollows';
@@ -88,11 +87,6 @@ export default function ClassCard({ classSession, isFavorite, onToggleFavorite, 
         <CardFooter className="pt-0 flex gap-2" onClick={(e) => e.stopPropagation()}>
           <BookingDialog 
             classSession={classSession}
-          />
-          <ReviewDialog 
-            title={classSession.title}
-            targetId={classSession.id}
-            targetType="class"
           />
           <Button 
             variant="outline" 
