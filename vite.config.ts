@@ -9,6 +9,9 @@ export default defineConfig(({mode}) => {
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.OPENROUTER_KEY': JSON.stringify(env.OPENROUTER_KEY),
+      'process.env.OPENROUTER_MODEL': JSON.stringify(env.OPENROUTER_MODEL),
+      'import.meta.env.OPENROUTER_KEY': JSON.stringify(env.OPENROUTER_KEY),
+      'import.meta.env.OPENROUTER_MODEL': JSON.stringify(env.OPENROUTER_MODEL),
     },
     resolve: {
       alias: {

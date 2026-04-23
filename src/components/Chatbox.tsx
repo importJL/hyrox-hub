@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, X, MessageSquare } from 'lucide-react';
+import { Send, Bot, Loader2, X, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getRelevantContext } from '@/lib/ragContext';
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'nvidia/nemotron-3-super-120b-a12b:free';
-const SYSTEM_PROMPT = `You are a friendly AI assistant for a HYROX fitness aggregation platform called HYROX Hub. 
+
+function buildSystemPrompt(relevantContext: string): string {
+  return `You are a friendly AI assistant for a HYROX fitness aggregation platform called HYROX Hub. 
 
 Your role is to help users find:
 - HYROX fitness classes (Foundation, Endurance, Skills, Simulation)
@@ -15,12 +17,16 @@ Your role is to help users find:
 - Certified instructors/coaches
 - Training tips and event information
 
+AVAILABLE SITE DATA:
+${relevantContext}
+
 Guidelines:
 - Be concise and encouraging
 - Use bullet points for multiple options
-- If you don't have specific data, suggest general HYROX training advice
+- When users ask about classes, instructors, or locations, reference the data above
 - Always be supportive and fitness-oriented
 - Keep responses under 3 sentences for quick answers`;
+}
 
 type Message = {
   id: string;
@@ -36,11 +42,14 @@ export default function Chatbox() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollToBottom();
   }, [messages]);
 
   const handleSend = async () => {
@@ -48,13 +57,18 @@ export default function Chatbox() {
 
     const userMessage: Message = { id: Date.now().toString(), role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setIsLoading(true);
 
     try {
+      const model = import.meta.env.OPENROUTER_MODEL;
       const conversationHistory = messages
         .filter(m => m.id !== '1')
         .map(m => ({ role: m.role, content: m.content }));
+
+      const relevantContext = getRelevantContext(currentInput);
+      const systemPrompt = buildSystemPrompt(relevantContext);
 
       const response = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
@@ -65,13 +79,13 @@ export default function Chatbox() {
           'X-Title': 'HYROX Hub',
         },
         body: JSON.stringify({
-          model: MODEL,
+          model,
           messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'system', content: systemPrompt },
             ...conversationHistory,
-            { role: 'user', content: input }
+            { role: 'user', content: currentInput }
           ],
-          max_tokens: 300,
+          max_tokens: 500,
         }),
       });
 
@@ -125,7 +139,7 @@ export default function Chatbox() {
       </CardHeader>
       
       <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <ScrollArea className="flex-1 p-4">
           <div className="flex flex-col gap-4">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -134,7 +148,7 @@ export default function Chatbox() {
                     <Bot className="h-4 w-4 text-primary" />
                   </div>
                 )}
-                <div className={`px-3 py-2 rounded-lg max-w-[80%] text-sm ${
+                <div className={`px-3 py-2 rounded-lg text-sm whitespace-pre-wrap break-words min-h-[40px] ${
                   msg.role === 'user' 
                     ? 'bg-primary text-primary-foreground rounded-tr-none' 
                     : 'bg-muted text-foreground rounded-tl-none'
@@ -153,6 +167,7 @@ export default function Chatbox() {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
         
