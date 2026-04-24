@@ -11,6 +11,7 @@ export type UserProfile = {
   classesCompleted: number;
   friendsCount: number;
   postsCount: number;
+  isHandleLocked: boolean;
 };
 
 const DEFAULT_USER: UserProfile = {
@@ -23,6 +24,7 @@ const DEFAULT_USER: UserProfile = {
   classesCompleted: 12,
   friendsCount: 3,
   postsCount: 5,
+  isHandleLocked: false,
 };
 
 export const useUser = () => {
@@ -32,11 +34,34 @@ export const useUser = () => {
     const saved = localStorage.getItem('hyrox_user');
     if (saved) {
       try {
-        setUser(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setUser({
+          ...DEFAULT_USER,
+          ...parsed,
+          isHandleLocked: parsed.isHandleLocked ?? true,
+        });
       } catch (e) {
         console.error('Failed to parse saved user', e);
+        localStorage.removeItem('hyrox_user');
       }
     }
+  }, []);
+
+  const initializeUser = useCallback((initialData: { name: string; handle: string; email: string }) => {
+    const newUser: UserProfile = {
+      id: 'usr_current',
+      name: initialData.name,
+      handle: initialData.handle,
+      email: initialData.email,
+      bio: 'Training for HYROX!',
+      image: 'https://github.com/shadcn.png',
+      classesCompleted: 0,
+      friendsCount: 0,
+      postsCount: 0,
+      isHandleLocked: true,
+    };
+    setUser(newUser);
+    localStorage.setItem('hyrox_user', JSON.stringify(newUser));
   }, []);
 
   const updateUser = useCallback((updates: Partial<UserProfile>) => {
@@ -48,5 +73,5 @@ export const useUser = () => {
     });
   }, []);
 
-  return { user, updateUser };
+  return { user, updateUser, initializeUser };
 };

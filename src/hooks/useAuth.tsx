@@ -12,6 +12,8 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (userData: User & { password: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
+  updatePassword: (oldPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  verifyPassword: (password: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,13 +36,18 @@ function saveStoredUsers(users: StoredUser[]): void {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
         const userData = JSON.parse(stored);
-        setUser(userData);
+        if (userData && userData.username) {
+          setUser(userData);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -92,8 +99,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  const updatePassword = async (oldPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    const users = getStoredUsers();
+    const currentUser = user;
+    
+    if (!currentUser) {
+      return { success: false, error: 'Not authenticated' };
+    }
+    
+    const userIndex = users.findIndex(u => u.username === currentUser.username);
+    
+    if (userIndex === -1) {
+      return { success: false, error: 'User not found' };
+    }
+    
+    if (users[userIndex].password !== oldPassword) {
+      return { success: false, error: 'Incorrect old password' };
+    }
+    
+    if (newPassword.length < 4) {
+      return { success: false, error: 'New password must be at least 4 characters' };
+    }
+    
+    users[userIndex].password = newPassword;
+    saveStoredUsers(users);
+    
+    return { success: true };
+  };
+
+  const verifyPassword = async (password: string): Promise<{ success: boolean; error?: string }> => {
+    const users = getStoredUsers();
+    const currentUser = user;
+    
+    if (!currentUser) {
+      return { success: false, error: 'Not authenticated' };
+    }
+    
+    const userIndex = users.findIndex(u => u.username === currentUser.username);
+    
+    if (userIndex === -1) {
+      return { success: false, error: 'User not found' };
+    }
+    
+    if (users[userIndex].password !== password) {
+      return { success: false, error: 'Incorrect password' };
+    }
+    
+    return { success: true };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout, updatePassword, verifyPassword }}>
       {children}
     </AuthContext.Provider>
   );

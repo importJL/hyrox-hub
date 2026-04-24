@@ -26,6 +26,7 @@ export default function ProfileModal({ open, onOpenChange }: ProfileModalProps) 
     classesCompleted: 12,
     friendsCount: 3,
     postsCount: 5,
+    isHandleLocked: false,
   });
 
   const handleSave = () => {
@@ -57,15 +58,7 @@ export default function ProfileModal({ open, onOpenChange }: ProfileModalProps) 
               ) : (
                 <h2 className="text-xl font-semibold">{user.name}</h2>
               )}
-              {isEditing ? (
-                <Input
-                  value={editForm.handle}
-                  onChange={(e) => setEditForm({ ...editForm, handle: e.target.value })}
-                  className="text-sm text-muted-foreground"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">{user.handle}</p>
-              )}
+              <p className="text-sm text-muted-foreground">{user.handle}</p>
             </div>
           </div>
 

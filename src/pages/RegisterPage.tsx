@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { useUser } from '@/hooks/useUser';
 import { Flame, User, Dumbbell } from 'lucide-react';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { initializeUser } = useUser();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -78,6 +80,11 @@ export default function RegisterPage() {
     });
 
     if (result.success) {
+      initializeUser({
+        name: formData.username.trim(),
+        handle: `@${formData.username.trim()}`,
+        email: formData.email.trim(),
+      });
       navigate('/');
     } else {
       setError(result.error || 'Registration failed');
