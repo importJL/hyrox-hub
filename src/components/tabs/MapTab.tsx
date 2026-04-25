@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MapPin, Star, Search } from 'lucide-react';
 import { useMapFilters } from '@/hooks/useFilters';
 import { getClassesByLocation, getLocationName } from '@/utils/dataHelpers';
+import { getLocationById } from '@/utils/dataHelpers';
 import Map from '../Map';
 import BookingDialog from '../dialogs/BookingDialog';
 import ReviewDialog from '../dialogs/ReviewDialog';
+import GymDetailModal from '../dialogs/GymDetailModal';
 
 interface MapTabProps {
   initialSelectedLocation?: string | null;
@@ -19,12 +20,13 @@ export default function MapTab({ initialSelectedLocation, onLocationSelect }: Ma
   const {
     mapSearchQuery,
     setMapSearchQuery,
-    mapFilterFacility,
-    setMapFilterFacility,
     selectedMapLocation,
     setSelectedMapLocation,
     filteredMapLocations,
   } = useMapFilters();
+
+  const [gymModalOpen, setGymModalOpen] = useState(false);
+  const [selectedGymForModal, setSelectedGymForModal] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialSelectedLocation) {
@@ -32,54 +34,44 @@ export default function MapTab({ initialSelectedLocation, onLocationSelect }: Ma
     }
   }, [initialSelectedLocation, setSelectedMapLocation]);
 
+  const handleGymClick = (locId: string) => {
+    setSelectedGymForModal(locId);
+    setGymModalOpen(true);
+  };
+
   return (
     <div className="h-[600px] animate-in fade-in-50 duration-500 flex flex-col md:flex-row gap-4">
       {/* Sidebar */}
       <Card className="w-full md:w-80 h-full overflow-hidden flex flex-col bg-card border-border shrink-0">
         <CardHeader className="p-4 border-b border-border space-y-2">
           <CardTitle className="text-lg">Gym Locations</CardTitle>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Find a gym..." 
-                className="pl-9 h-9 border-border bg-background"
-                value={mapSearchQuery}
-                onChange={(e) => setMapSearchQuery(e.target.value)}
-              />
-            </div>
-            <Select value={mapFilterFacility} onValueChange={setMapFilterFacility}>
-              <SelectTrigger className="w-[110px] h-9 border-border bg-background">
-                <SelectValue placeholder="Facility" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="Showers">Showers</SelectItem>
-                <SelectItem value="Sauna">Sauna</SelectItem>
-                <SelectItem value="Ice Baths">Ice Baths</SelectItem>
-                <SelectItem value="Parking">Parking</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Find a gym..."
+              className="pl-9 h-9 border-border bg-background"
+              value={mapSearchQuery}
+              onChange={(e) => setMapSearchQuery(e.target.value)}
+            />
           </div>
         </CardHeader>
         <ScrollArea className="flex-1 p-0">
           <div className="flex flex-col">
             {filteredMapLocations.map(loc => (
-              <div 
-                key={loc.id} 
+              <div
+                key={loc.id}
                 className={`p-4 border-b border-border transition-colors hover:bg-muted/50 ${selectedMapLocation === loc.id ? 'bg-muted border-l-4 border-l-primary' : ''}`}
               >
-                <div className="cursor-pointer" onClick={() => setSelectedMapLocation(loc.id)}>
+                <div className="cursor-pointer" onClick={() => handleGymClick(loc.id)}>
                   <h3 className="font-semibold text-sm mb-1">{loc.name}</h3>
                   <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     {loc.address}
                   </p>
-                  <div className="flex justify-between items-center text-xs mt-3">
+                  <div className="flex items-center text-xs mt-3">
                     <span className="flex items-center gap-1 text-primary font-medium">
                       <Star className="h-3 w-3 fill-primary" /> {loc.rating}
                     </span>
-                    <span className="text-muted-foreground">{loc.facilities.length} Facilities</span>
                   </div>
                 </div>
 
@@ -102,8 +94,8 @@ export default function MapTab({ initialSelectedLocation, onLocationSelect }: Ma
                         <div className="text-xs text-muted-foreground">No upcoming classes.</div>
                       )}
                     </div>
-                    
-                    <ReviewDialog 
+
+                    <ReviewDialog
                       title={loc.name}
                       description="Share your experience with this gym and its facilities."
                       variant="sm"
@@ -121,13 +113,19 @@ export default function MapTab({ initialSelectedLocation, onLocationSelect }: Ma
 
       {/* Map container */}
       <Card className="flex-1 h-full bg-card border-border overflow-hidden">
-        <Map 
-          locations={filteredMapLocations} 
+        <Map
+          locations={filteredMapLocations}
           userLocation={undefined}
           selectedLocationId={selectedMapLocation}
-          onLocationSelect={(id) => setSelectedMapLocation(id)}
+          onLocationSelect={(id) => handleGymClick(id)}
         />
       </Card>
+
+      <GymDetailModal
+        location={selectedGymForModal ? getLocationById(selectedGymForModal) : null}
+        open={gymModalOpen}
+        onOpenChange={setGymModalOpen}
+      />
     </div>
   );
 }

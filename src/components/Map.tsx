@@ -99,7 +99,7 @@ interface MapProps {
 }
 
 export default function Map({ locations, userLocation, onLocationSelect, selectedLocationId }: MapProps) {
-  const defaultCenter: [number, number] = [51.5074, -0.1278]; // London
+  const defaultCenter: [number, number] = [22.32, 114.18]; // Hong Kong
   const center = userLocation || defaultCenter;
   const { theme } = useTheme();
 

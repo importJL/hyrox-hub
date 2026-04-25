@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { MOCK_LOCATIONS } from '@/data/mockData';
+import { LOCATIONS } from '@/data/mockData';
 import { useClassFilters } from '@/hooks/useFilters';
 import ClassCard from '../cards/ClassCard';
 
@@ -40,7 +40,7 @@ export default function ClassesTab({ isFavorite, onToggleFavorite, onNavigateToM
           </SelectTrigger>
           <SelectContent className="bg-card border-border">
             <SelectItem value="all">All Locations</SelectItem>
-            {MOCK_LOCATIONS.map(loc => (
+            {LOCATIONS.map(loc => (
               <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
             ))}
           </SelectContent>

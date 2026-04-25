@@ -7,8 +7,9 @@ export type Location = {
   lat: number;
   lng: number;
   rating: number;
-  facilities: string[];
   image: string;
+  location_phone_number?: number;
+  location_website?: string;
 };
 
 export type Instructor = {
@@ -85,38 +86,34 @@ export type UserProfile = {
   isFriend: boolean;
 };
 
-export const MOCK_LOCATIONS: Location[] = [
-  {
-    id: 'loc_1',
-    name: 'Iron Forge Fitness',
-    address: '123 Power Ave, London',
-    lat: 51.5074,
-    lng: -0.1278,
-    rating: 4.8,
-    facilities: ['Showers', 'Locker Room', 'Protein Bar', 'Recovery Zone'],
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop',
-  },
-  {
-    id: 'loc_2',
-    name: 'Apex Performance Center',
-    address: '45 Endurance St, London',
-    lat: 51.5154,
-    lng: -0.0978,
-    rating: 4.9,
-    facilities: ['Showers', 'Sauna', 'Ice Baths', 'Cafe'],
-    image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1470&auto=format&fit=crop',
-  },
-  {
-    id: 'loc_3',
-    name: 'The Grindhouse',
-    address: '78 Hustle Blvd, London',
-    lat: 51.4974,
-    lng: -0.1478,
-    rating: 4.6,
-    facilities: ['Locker Room', 'Parking', 'Pro Shop'],
-    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1375&auto=format&fit=crop',
-  }
-];
+import locationsData from './locations.json';
+
+interface RawLocation {
+  location_name: string;
+  location_address: string;
+  location_lat: number;
+  location_lng: number;
+  location_phone_number?: number;
+  location_website?: string;
+  location_rating: number;
+  location_image?: string;
+}
+
+function generateId(name: string): string {
+  return `loc_${name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').slice(0, 30)}`;
+}
+
+export const LOCATIONS: Location[] = (locationsData as RawLocation[]).map((loc) => ({
+  id: generateId(loc.location_name),
+  name: loc.location_name,
+  address: loc.location_address,
+  lat: loc.location_lat,
+  lng: loc.location_lng,
+  rating: loc.location_rating,
+  image: loc.location_image || '',
+  location_phone_number: loc.location_phone_number,
+  location_website: loc.location_website,
+}));
 
 export const MOCK_INSTRUCTORS: Instructor[] = [
   {

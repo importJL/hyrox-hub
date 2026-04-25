@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MOCK_CLASSES, MOCK_LOCATIONS, ClassSession, Location } from '@/data/mockData';
+import { MOCK_CLASSES, LOCATIONS, ClassSession, Location } from '@/data/mockData';
 
 export const useClassFilters = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,25 +28,20 @@ export const useClassFilters = () => {
 
 export const useMapFilters = () => {
   const [mapSearchQuery, setMapSearchQuery] = useState('');
-  const [mapFilterFacility, setMapFilterFacility] = useState('all');
   const [selectedMapLocation, setSelectedMapLocation] = useState<string | null>(null);
 
   const filteredMapLocations = useMemo(() => {
-    return MOCK_LOCATIONS.filter((loc: Location) => {
+    return LOCATIONS.filter((loc: Location) => {
       const matchesSearch =
         loc.name.toLowerCase().includes(mapSearchQuery.toLowerCase()) ||
         loc.address.toLowerCase().includes(mapSearchQuery.toLowerCase());
-      const matchesFacility =
-        mapFilterFacility === 'all' || loc.facilities.includes(mapFilterFacility);
-      return matchesSearch && matchesFacility;
+      return matchesSearch;
     });
-  }, [mapSearchQuery, mapFilterFacility]);
+  }, [mapSearchQuery]);
 
   return {
     mapSearchQuery,
     setMapSearchQuery,
-    mapFilterFacility,
-    setMapFilterFacility,
     selectedMapLocation,
     setSelectedMapLocation,
     filteredMapLocations,

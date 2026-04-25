@@ -7,7 +7,7 @@
         "location_phone_number": 54427645,
         "location_website": "http://www.tribalfitnesshk.com/",
         "location_rating": 5.0,
-        "location_image": 
+        "location_image": "https://lh3.googleusercontent.com/gps-cs-s/APNQkAG0kzsSSbzv4DmSD27ILy02nO-_ibEvo35Qpp5dpY9usKoAj9EbMSql-sy4iXlaUkhOd2LTWrvF3jHX-dRxolXvrTzosnGFUVAIqpPWaaaXlAez_8VRBEXvwQG6yN06B6DJpKqEgA=w408-h272-k-no"
     },
     {
         "location_name": "EFX24 大角咀",
@@ -17,17 +17,7 @@
         "location_phone_number": 65971058,
         "location_website": "https://efx24.fit/",
         "location_rating": 5.0,
-        "location_image": 
-    },
-    {
-        "location_name": "Feral State Training Hub",
-        "location_address": "101-102 Hoi Yuen Rd, Kwun Tong",
-        "location_lat": 22.310192858889536,
-        "location_lng": 114.22379216697772,
-        "location_phone_number": 67624368,
-        "location_website": "https://www.instagram.com/feralstate.hk",
-        "location_rating": 5.0,
-        "location_image": 
+        "location_image": "https://efx24.com/wp-content/uploads/2023/08/FLSPK@2x-1024x514.png"
     },
     {
         "location_name": "EAST High Performance Centre",
@@ -37,7 +27,7 @@
         "location_phone_number": 52825150,
         "location_website": "https://www.easthighperformancecentre.com/",
         "location_rating": 3.7,
-        "location_image": 
+        "location_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5TCgEd1McmejC23LGUmKsc9x4Qw5piio4rg&s"
     },
     {
         "location_name": "House of Fitness",
@@ -47,17 +37,17 @@
         "location_phone_number": 60452325,
         "location_website": "https://www.hofhk.com/",
         "location_rating": 4.7,
-        "location_image": 
+        "location_image": "https://s3-media0.fl.yelpcdn.com/bphoto/J6O0BLwpGrvXyvcvUnhvVw/348s.jpg"
     },
     {
-        "location_name": "APA Causeway Bay",
-        "location_address": "3/F, 30 Hollywood Road, Central",
-        "location_lat": 22.279180798308797,
-        "location_lng": 114.18210371371609,
-        "location_phone_number": 64668200,
+        "location_name": "Midtown28 Fitness",
+        "location_address": "28/F Midtown, Tang Lung St, Causeway Bay",
+        "location_lat": 22.279045545450217,
+        "location_lng": 114.1818880191129,
+        "location_phone_number": 62644432 ,
         "location_website": "http://apacademy.hk/",
-        "location_rating": "",
-        "location_image": 
+        "location_rating": 5.0,
+        "location_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAwuqfbsc0NmTHGr-1xRiEBpvumg0xVJuCGQ&s"
     },
     {
         "location_name": "BFT Causeway Bay",
@@ -67,6 +57,6 @@
         "location_phone_number": 67064203,
         "location_website": "https://www.bodyfittraining.au/club/causeway-bay",
         "location_rating": 4.7,
-        "location_image": 
-    },
+        "location_image": "https://www.bodyfittraining.au/hubfs/BFT-Home-Social.jpg"
+    }
 ]

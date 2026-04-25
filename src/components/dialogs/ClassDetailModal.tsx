@@ -130,11 +130,6 @@ export default function ClassDetailModal({ classSession, open, onOpenChange, onN
               <div className="bg-muted/30 p-3 rounded-lg border border-border">
                 <p className="font-medium">{location?.name || getLocationName(classSession.locationId)}</p>
                 <p className="text-sm text-muted-foreground">{location?.address}</p>
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {location?.facilities.map(fac => (
-                    <Badge key={fac} variant="outline" className="text-xs">{fac}</Badge>
-                  ))}
-                </div>
                 {location && <MiniMap location={location} />}
               </div>
             </div>

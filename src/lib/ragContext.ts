@@ -1,4 +1,4 @@
-import { MOCK_LOCATIONS, MOCK_INSTRUCTORS, MOCK_CLASSES, MOCK_FORUM_POSTS } from '@/data/mockData';
+import { LOCATIONS, MOCK_INSTRUCTORS, MOCK_CLASSES, MOCK_FORUM_POSTS } from '@/data/mockData';
 
 function normalizeText(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
@@ -25,8 +25,8 @@ interface ScoredItem {
 }
 
 export function getSiteContent(): string {
-  const locations = MOCK_LOCATIONS.map(loc => 
-    `${loc.name}: ${loc.address}. Rating: ${loc.rating}. Facilities: ${loc.facilities.join(', ')}`
+  const locations = LOCATIONS.map(loc => 
+    `${loc.name}: ${loc.address}. Rating: ${loc.rating}`
   ).join('\n');
 
   const instructors = MOCK_INSTRUCTORS.map(inst =>
@@ -34,7 +34,7 @@ export function getSiteContent(): string {
   ).join('\n');
 
   const classes = MOCK_CLASSES.map(cls => {
-    const loc = MOCK_LOCATIONS.find(l => l.id === cls.locationId);
+    const loc = LOCATIONS.find(l => l.id === cls.locationId);
     const inst = MOCK_INSTRUCTORS.find(i => i.id === cls.instructorId);
     return `${cls.title} (${cls.type}): ${cls.difficulty}, £${cls.price}, ${cls.duration}min at ${cls.time} on ${cls.date} at ${loc?.name} with ${inst?.name}. Spots: ${cls.spotsBooked}/${cls.spotsTotal}`;
   }).join('\n');
@@ -54,9 +54,9 @@ export function getRelevantContext(query: string, maxItems: number = 5): string 
 
   const queryTokens = tokenize(query);
 
-  const locationScores: ScoredItem[] = MOCK_LOCATIONS.map(loc => ({
-    text: `LOCATION: ${loc.name} - ${loc.address}. Rating: ${loc.rating}/5. Facilities: ${loc.facilities.join(', ')}`,
-    score: scoreMatch(queryTokens, `${loc.name} ${loc.address} ${loc.facilities.join(' ')}`)
+  const locationScores: ScoredItem[] = LOCATIONS.map(loc => ({
+    text: `LOCATION: ${loc.name} - ${loc.address}. Rating: ${loc.rating}/5.`,
+    score: scoreMatch(queryTokens, `${loc.name} ${loc.address}`)
   }));
 
   const instructorScores: ScoredItem[] = MOCK_INSTRUCTORS.map(inst => ({
@@ -65,7 +65,7 @@ export function getRelevantContext(query: string, maxItems: number = 5): string 
   }));
 
   const classScores: ScoredItem[] = MOCK_CLASSES.map(cls => {
-    const loc = MOCK_LOCATIONS.find(l => l.id === cls.locationId);
+    const loc = LOCATIONS.find(l => l.id === cls.locationId);
     const inst = MOCK_INSTRUCTORS.find(i => i.id === cls.instructorId);
     return {
       text: `CLASS: ${cls.title} - ${cls.type}, ${cls.difficulty}, £${cls.price}, ${cls.duration}min, ${cls.time} at ${loc?.name || 'TBD'}, Instructor: ${inst?.name || 'TBD'}. Spots available: ${cls.spotsTotal - cls.spotsBooked}/${cls.spotsTotal}`,

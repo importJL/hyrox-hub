@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar, Heart, MapPin, Search, Dumbbell, Users } from 'lucide-react';
-import { MOCK_CLASSES, MOCK_INSTRUCTORS, MOCK_LOCATIONS } from '@/data/mockData';
+import { MOCK_CLASSES, MOCK_INSTRUCTORS, LOCATIONS } from '@/data/mockData';
 import { getLocationName } from '@/utils/dataHelpers';
 
 interface FavoritesTabProps {
@@ -18,7 +18,7 @@ export default function FavoritesTab({ favorites, onToggleFavorite }: FavoritesT
   
   const favoriteClasses = MOCK_CLASSES.filter(c => favorites.includes(c.id));
   const favoriteInstructors = MOCK_INSTRUCTORS.filter(i => favorites.includes(i.id));
-  const favoriteLocations = MOCK_LOCATIONS.filter(l => favorites.includes(l.id));
+  const favoriteLocations = LOCATIONS.filter(l => favorites.includes(l.id));
 
   const filterBySearch = <T extends { title?: string; name?: string; bio?: string }>(items: T[]): T[] => {
     if (!searchQuery) return items;
