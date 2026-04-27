@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogContentNoOverlay, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ClassSession } from '@/data/mockData';
 import { useBookings } from '@/hooks/useBookings';
@@ -10,13 +10,15 @@ interface BookingDialogProps {
   variant?: 'default' | 'sm';
   buttonText?: string;
   onBookingComplete?: () => void;
+  useNoOverlay?: boolean;
 }
 
 export default function BookingDialog({ 
   classSession, 
   variant = 'default',
   buttonText,
-  onBookingComplete
+  onBookingComplete,
+  useNoOverlay = false
 }: BookingDialogProps) {
   const { hasBookedClass, isClassFullyBooked, bookClass, unbookClass } = useBookings();
   const [open, setOpen] = useState(false);
@@ -69,22 +71,41 @@ export default function BookingDialog({
           {fullyBooked ? 'Full' : 'Book'}
         </button>
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogContent className="bg-card border-border text-card-foreground">
-            <DialogHeader>
-              <DialogTitle>Confirm Booking</DialogTitle>
-              <DialogDescription className="text-muted-foreground">
-                Are you sure you want to book <strong>{classSession.title}</strong> on {classSession.date} at {classSession.time}?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="mt-4 gap-2">
-              <Button variant="outline" className="border-border hover:bg-muted" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleBook}>
-                Confirm Booking
-              </Button>
-            </DialogFooter>
-          </DialogContent>
+          {useNoOverlay ? (
+            <DialogContentNoOverlay className="bg-card border-border text-card-foreground">
+              <DialogHeader>
+                <DialogTitle>Confirm Booking</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  Are you sure you want to book <strong>{classSession.title}</strong> on {classSession.date} at {classSession.time}?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="mt-4 gap-2">
+                <Button variant="outline" className="border-border hover:bg-muted" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleBook}>
+                  Confirm Booking
+                </Button>
+              </DialogFooter>
+            </DialogContentNoOverlay>
+          ) : (
+            <DialogContent className="bg-card border-border text-card-foreground">
+              <DialogHeader>
+                <DialogTitle>Confirm Booking</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  Are you sure you want to book <strong>{classSession.title}</strong> on {classSession.date} at {classSession.time}?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="mt-4 gap-2">
+                <Button variant="outline" className="border-border hover:bg-muted" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleBook}>
+                  Confirm Booking
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
         </Dialog>
       </>
     );
@@ -118,29 +139,54 @@ export default function BookingDialog({
       >
         {buttonText || (fullyBooked ? 'Class Full' : `Book • £${classSession.price}`)}
       </button>
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="bg-card border-border text-card-foreground">
-          <DialogHeader>
-            <DialogTitle>Confirm Booking</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              {fullyBooked ? (
-                <span className="text-red-500">This class is fully booked. You cannot book at this time.</span>
-              ) : (
-                <>Are you sure you want to book <strong>{classSession.title}</strong> on {classSession.date} at {classSession.time}?</>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" className="border-border hover:bg-muted" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            {hasSpots && (
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleBook}>
-                Confirm Booking
+<Dialog open={open} onOpenChange={handleOpenChange}>
+        {useNoOverlay ? (
+          <DialogContentNoOverlay className="bg-card border-border text-card-foreground">
+            <DialogHeader>
+              <DialogTitle>Confirm Booking</DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                {fullyBooked ? (
+                  <span className="text-red-500">This class is fully booked. You cannot book at this time.</span>
+                ) : (
+                  <>Are you sure you want to book <strong>{classSession.title}</strong> on {classSession.date} at {classSession.time}?</>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="mt-4 gap-2">
+              <Button variant="outline" className="border-border hover:bg-muted" onClick={() => setOpen(false)}>
+                Cancel
               </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
+              {hasSpots && (
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleBook}>
+                  Confirm Booking
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContentNoOverlay>
+        ) : (
+          <DialogContent className="bg-card border-border text-card-foreground">
+            <DialogHeader>
+              <DialogTitle>Confirm Booking</DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                {fullyBooked ? (
+                  <span className="text-red-500">This class is fully booked. You cannot book at this time.</span>
+                ) : (
+                  <>Are you sure you want to book <strong>{classSession.title}</strong> on {classSession.date} at {classSession.time}?</>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="mt-4 gap-2">
+              <Button variant="outline" className="border-border hover:bg-muted" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              {hasSpots && (
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleBook}>
+                  Confirm Booking
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        )}
       </Dialog>
     </>
   );

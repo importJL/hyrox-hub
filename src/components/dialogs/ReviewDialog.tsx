@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -115,12 +115,6 @@ export default function ReviewDialog({
   if (variant === 'sm') {
     return (
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="w-full text-xs h-8 border-border hover:bg-background">
-            <Star className="h-3 w-3 mr-1" />
-            Rate Location
-          </Button>
-        </DialogTrigger>
         <DialogContent className="bg-card border-border text-card-foreground max-w-2xl">
           <DialogHeader>
             <DialogTitle>Review {title}</DialogTitle>
@@ -138,18 +132,21 @@ export default function ReviewDialog({
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Submit Rating</Button>
           </form>
         </DialogContent>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full text-xs h-8 border-border hover:bg-background"
+          onClick={() => setShowModal(true)}
+        >
+          <Star className="h-3 w-3 mr-1" />
+          Rate Location
+        </Button>
       </Dialog>
     );
   }
 
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="border-border hover:bg-muted">
-          <Star className="h-4 w-4 mr-2" />
-          Review Class
-        </Button>
-      </DialogTrigger>
       <DialogContent className="bg-card border-border text-card-foreground max-w-4xl w-[80vw] max-h-[90vh] overflow-hidden">
         <DialogHeader className="border-b border-border pb-4">
           <DialogTitle className="text-xl">Review {title}</DialogTitle>
@@ -233,6 +230,14 @@ export default function ReviewDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+      <Button 
+        variant="outline" 
+        className="border-border hover:bg-muted"
+        onClick={() => setShowModal(true)}
+      >
+        <Star className="h-4 w-4 mr-2" />
+        Review Class
+      </Button>
     </Dialog>
   );
 }
