@@ -176,7 +176,7 @@ export default function GymDetailModal({ location, open, onOpenChange }: GymDeta
                         {cls.spotsBooked}/{cls.spotsTotal} spots
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-4 pt-2 border-t border-border/50 mt-3">
                       <span className="font-semibold text-lg">£{cls.price}</span>
                       <BookingDialog classSession={cls} useNoOverlay />
                     </div>
